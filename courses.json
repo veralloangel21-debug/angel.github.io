@@ -1,0 +1,32 @@
+{
+  "courses": [
+    {
+      "year_level": "1st",
+      "sem": "1st",
+      "code": "IT112",
+      "description": "Computer Programming 1",
+      "credit": "3.0"
+    },
+    {
+      "year_level": "1st",
+      "sem": "2nd",
+      "code": "IT113",
+      "description": "Computer Programming 2",
+      "credit": "3.0"
+    },
+    {
+      "year_level": "2nd",
+      "sem": "1st",
+      "code": "IT221",
+      "description": "Data Structures and Algorithms",
+      "credit": "3.0"
+    },
+    {
+      "year_level": "2nd",
+      "sem": "2nd",
+      "code": "IT222",
+      "description": "Database Management Systems",
+      "credit": "3.0"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Subjects Taken</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <main class="container">
+    <h1>Subjects Taken</h1>
+
+    <section class="card">
+      <p class="hint">
+        Type a keyword to search by <b>description</b>
+        (e.g., programming, database).
+      </p>
+
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search by description..."
+        autocomplete="off"
+      />
+
+      <div class="status" id="statusText">Loading courses...</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Sem</th>
+              <th>Code</th>
+              <th>Description</th>
+              <th>Credit</th>
+            </tr>
+          </thead>
+          <tbody id="coursesBody">
+            <!-- Rows inserted by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
