@@ -4,7 +4,56 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Subjects Taken</title>
-  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f6f7fb;
+    }
+
+    .container { max-width: 980px; margin: 0 auto; }
+    h1 { margin: 0 0 14px; }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .hint { margin: 0 0 10px; color: #333; }
+
+    #searchInput {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d7dbe6;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    #searchInput:focus { outline: none; border-color: #7a86ff; }
+
+    .status { margin: 10px 0 12px; font-size: 14px; color: #444; }
+
+    .table-wrap { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 2px solid #e6e9f2;
+    }
+    tbody td {
+      padding: 12px;
+      border-bottom: 1px solid #eef1f7;
+    }
+    tbody tr:hover { background: #fafbff; }
+  </style>
 </head>
 
 <body>
@@ -13,8 +62,7 @@
 
     <section class="card">
       <p class="hint">
-        Type a keyword to search by <b>description</b>
-        (e.g., programming, database).
+        Type a keyword to search by <b>description</b> (e.g., programming, database).
       </p>
 
       <input
@@ -45,6 +93,86 @@
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script>
+    const COURSES_URL = "courses.json";
+
+    const coursesBody = document.getElementById("coursesBody");
+    const searchInput = document.getElementById("searchInput");
+    const statusText = document.getElementById("statusText");
+
+    let allCourses = [];
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function renderCourses(courses) {
+      coursesBody.innerHTML = "";
+
+      if (!courses || courses.length === 0) {
+        statusText.textContent = "No matching subjects found.";
+        return;
+      }
+
+      statusText.textContent = `Showing ${courses.length} subject(s).`;
+
+      coursesBody.innerHTML = courses
+        .map(
+          (c) => `
+            <tr>
+              <td>${escapeHtml(c.year_level ?? "")}</td>
+              <td>${escapeHtml(c.sem ?? "")}</td>
+              <td>${escapeHtml(c.code ?? "")}</td>
+              <td>${escapeHtml(c.description ?? "")}</td>
+              <td>${escapeHtml(c.credit ?? "")}</td>
+            </tr>
+          `
+        )
+        .join("");
+    }
+
+    function filterCourses(keyword) {
+      const q = keyword.trim().toLowerCase();
+
+      const filtered = allCourses.filter((c) =>
+        String(c.description ?? "").toLowerCase().includes(q)
+      );
+
+      renderCourses(filtered);
+    }
+
+    async function loadCourses() {
+      try {
+        statusText.textContent = "Loading courses...";
+
+        const response = await fetch(COURSES_URL, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        if (!data || !Array.isArray(data.courses)) {
+          throw new Error('Invalid JSON format. Expected: { "courses": [ ... ] }');
+        }
+
+        allCourses = data.courses;
+        renderCourses(allCourses);
+      } catch (err) {
+        console.error(err);
+        statusText.textContent = `Failed to load courses.json: ${err.message}`;
+      }
+    }
+
+    searchInput.addEventListener("input", (e) => {
+      filterCourses(e.target.value);
+    });
+
+    loadCourses();
+  </script>
 </body>
 </html>
