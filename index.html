@@ -1,178 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Subjects Taken</title>
+  <meta charset="UTF-8">
+  <title>My Portfolio</title>
 
   <style>
-    * { box-sizing: border-box; }
-
     body {
-      margin: 0;
-      padding: 24px;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f6f7fb;
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f4f4f4;
     }
 
-    .container { max-width: 980px; margin: 0 auto; }
-    h1 { margin: 0 0 14px; }
+    h1, h2 {
+      color: #333;
+    }
 
     .card {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 18px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-    }
-
-    .hint { margin: 0 0 10px; color: #333; }
-
-    #searchInput {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #d7dbe6;
+      background: white;
+      padding: 20px;
+      margin-bottom: 30px;
       border-radius: 10px;
-      font-size: 16px;
-      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    #searchInput:focus { outline: none; border-color: #7a86ff; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
 
-    .status { margin: 10px 0 12px; font-size: 14px; color: #444; }
-
-    .table-wrap { overflow-x: auto; }
-
-    table { width: 100%; border-collapse: collapse; }
-    thead th {
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
       text-align: left;
-      padding: 12px;
-      border-bottom: 2px solid #e6e9f2;
     }
-    tbody td {
-      padding: 12px;
-      border-bottom: 1px solid #eef1f7;
+
+    th {
+      background-color: #f0f0f0;
     }
-    tbody tr:hover { background: #fafbff; }
+
+    #search {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
   </style>
 </head>
-
 <body>
-  <main class="container">
-    <h1>Subjects Taken</h1>
 
-    <section class="card">
-      <p class="hint">
-        Type a keyword to search by <b>description</b> (e.g., programming, database).
-      </p>
+  <h1>My Web Portfolio</h1>
 
-      <input
-        id="searchInput"
-        type="text"
-        placeholder="Search by description..."
-        autocomplete="off"
-      />
+  
+  <div class="card">
+    <h2>Student List</h2>
+    <ul id="student-list"></ul>
+  </div>
 
-      <div class="status" id="statusText">Loading courses...</div>
+ 
+  <div class="card">
+    <h2>Subjects Taken</h2>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Year</th>
-              <th>Sem</th>
-              <th>Code</th>
-              <th>Description</th>
-              <th>Credit</th>
-            </tr>
-          </thead>
-          <tbody id="coursesBody">
-            <!-- Rows inserted by JS -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </main>
+   
+    <input type="text" id="search" placeholder="Search subject description..." />
+
+    <table>
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Sem</th>
+          <th>Code</th>
+          <th>Description</th>
+          <th>Credit</th>
+        </tr>
+      </thead>
+      <tbody id="course-body"></tbody>
+    </table>
+  </div>
 
   <script>
-    const COURSES_URL = "courses.json";
+    
+    fetch("https://github.com/veralloangel21-debug/angel.github.io")
+      .then(response => response.json())
+      .then(data => {
+        const studentList = document.getElementById("student-list");
 
-    const coursesBody = document.getElementById("coursesBody");
-    const searchInput = document.getElementById("searchInput");
-    const statusText = document.getElementById("statusText");
+        data.students.forEach(student => {
+          const li = document.createElement("li");
+          li.textContent = `${student.name} - ${student.age} (${student.course})`;
+          studentList.appendChild(li);
+        });
+      })
+      .catch(error => console.log("Student JSON Error:", error));
 
+
+    
     let allCourses = [];
 
-    function escapeHtml(text) {
-      return String(text)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function displayCourses(courses) {
+      const tbody = document.getElementById("course-body");
+      tbody.innerHTML = "";
+
+      courses.forEach(course => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${course.year_level}</td>
+          <td>${course.sem}</td>
+          <td>${course.code}</td>
+          <td>${course.description}</td>
+          <td>${course.credit}</td>
+        `;
+
+        tbody.appendChild(row);
+      });
     }
 
-    function renderCourses(courses) {
-      coursesBody.innerHTML = "";
+    fetch("https://xxxx.github.io/courses.json")
+      .then(response => response.json())
+      .then(data => {
+        allCourses = data.courses;
+        displayCourses(allCourses);
+      })
+      .catch(error => console.log("Courses JSON Error:", error));
 
-      if (!courses || courses.length === 0) {
-        statusText.textContent = "No matching subjects found.";
-        return;
-      }
 
-      statusText.textContent = `Showing ${courses.length} subject(s).`;
 
-      coursesBody.innerHTML = courses
-        .map(
-          (c) => `
-            <tr>
-              <td>${escapeHtml(c.year_level ?? "")}</td>
-              <td>${escapeHtml(c.sem ?? "")}</td>
-              <td>${escapeHtml(c.code ?? "")}</td>
-              <td>${escapeHtml(c.description ?? "")}</td>
-              <td>${escapeHtml(c.credit ?? "")}</td>
-            </tr>
-          `
-        )
-        .join("");
-    }
+    document.getElementById("search").addEventListener("input", function() {
+      const keyword = this.value.toLowerCase();
 
-    function filterCourses(keyword) {
-      const q = keyword.trim().toLowerCase();
-
-      const filtered = allCourses.filter((c) =>
-        String(c.description ?? "").toLowerCase().includes(q)
+      const filtered = allCourses.filter(course =>
+        course.description.toLowerCase().includes(keyword)
       );
 
-      renderCourses(filtered);
-    }
-
-    async function loadCourses() {
-      try {
-        statusText.textContent = "Loading courses...";
-
-        const response = await fetch(COURSES_URL, { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status} - ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        if (!data || !Array.isArray(data.courses)) {
-          throw new Error('Invalid JSON format. Expected: { "courses": [ ... ] }');
-        }
-
-        allCourses = data.courses;
-        renderCourses(allCourses);
-      } catch (err) {
-        console.error(err);
-        statusText.textContent = `Failed to load courses.json: ${err.message}`;
-      }
-    }
-
-    searchInput.addEventListener("input", (e) => {
-      filterCourses(e.target.value);
+      displayCourses(filtered);
     });
 
-    loadCourses();
   </script>
+
 </body>
 </html>
